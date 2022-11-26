@@ -16,6 +16,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send(startMessage);
 });
 
+app.get("/favicon.ico", (req, res) => res.status(204));
+
 app.use((req: Request, res: Response, next: NextFunction) => {
   const apiKey = req.get("API-KEY");
 

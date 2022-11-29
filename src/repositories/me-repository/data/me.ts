@@ -5,6 +5,22 @@ export const me = {
     country: "Belarus",
     city: "Minsk",
   },
+  profession: "Frontend Developer",
+  stack: [
+    "React",
+    "TypeScript",
+    "JavaScript",
+    "Redux",
+    "Redux Toolkit",
+    "HTML",
+    "CSS",
+    "SASS",
+    "Git",
+    "Material-UI",
+    "Axios",
+    "Figma",
+    "Express (basic)",
+  ],
 };
 Object.defineProperties(me, {
   birthDay: {

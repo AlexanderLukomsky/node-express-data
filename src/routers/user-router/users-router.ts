@@ -1,8 +1,15 @@
 import { Router, Request, Response } from "express";
-import { validationMiddleware } from "../../middleware";
+import {
+  validationMiddleware,
+  validationRequestBodyObjectType,
+} from "../../middleware";
 
 import { usersRepository } from "../../repositories/users-repository";
-import { validateUser, validateUserKeys, validateUserType } from "./validators";
+import {
+  validationUser,
+  validationUserRedundantKeys,
+  validationUserRequiredKeys,
+} from "./validators";
 
 export const usersRouter = Router({});
 
@@ -26,10 +33,13 @@ usersRouter.get("/:id", async (req: Request, res: Response) => {
 
 usersRouter.put(
   "/:id",
-  validateUserType,
-  validateUserKeys,
-  validateUser,
+  validationRequestBodyObjectType,
   validationMiddleware,
+  validationUserRequiredKeys,
+  validationUserRedundantKeys,
+  validationUser,
+  validationMiddleware,
+
   async (req: Request, res: Response) => {
     const id = +req.params.id;
     const isUpdated = await usersRepository.updateUser(id, req.body);
@@ -42,6 +52,21 @@ usersRouter.put(
   }
 );
 
+usersRouter.post(
+  "/",
+  validationRequestBodyObjectType,
+  validationMiddleware,
+  validationUserRequiredKeys,
+  validationUserRedundantKeys,
+  validationUser,
+  validationMiddleware,
+
+  async (req: Request, res: Response) => {
+    const newUser = await usersRepository.createUser(req.body);
+    res.send(newUser);
+  }
+);
+
 usersRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = +req.params.id;
   const isDeleted = await usersRepository.deleteUser(id);
@@ -51,16 +76,3 @@ usersRouter.delete("/:id", async (req: Request, res: Response) => {
     res.send(404);
   }
 });
-
-usersRouter.post(
-  "/",
-  validateUserType,
-  validationMiddleware,
-  validateUserKeys,
-  validateUser,
-  validationMiddleware,
-  async (req: Request, res: Response) => {
-    const newUser = await usersRepository.createUser(req.body);
-    res.send(newUser);
-  }
-);

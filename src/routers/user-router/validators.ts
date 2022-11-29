@@ -1,59 +1,69 @@
 import { NextFunction, Request, Response } from "express";
-import { body } from "express-validator";
+import { body, validationResult } from "express-validator";
 
-export const validateUserType = [
-  body().isObject().withMessage("must be object type"),
+export const validationUserRequiredKeys = [
   body(["birthday", "address"])
     .isObject()
     .withMessage("must be object type")
     .bail(),
+
+  body([
+    "name",
+    "lastName",
+    "birthday.day",
+    "birthday.month",
+    "birthday.year",
+    "address.country",
+    "address.city",
+  ])
+    .exists()
+    .withMessage("required")
+    .bail(),
 ];
 
-export const validateUser = [
-  body(["name", "lastName"])
+export const validationUser = [
+  body(["name", "lastName", "address.country", "address.city"])
     .isString()
-    .withMessage("name and lastName must be typeof string")
+    .withMessage("must be typeof string")
     .bail()
     .trim()
     .escape()
     .notEmpty()
-    .withMessage("name and lastName can not be empty!")
+    .withMessage("can not be empty!")
     .bail()
     .isLength({ min: 1, max: 30 })
-    .withMessage("value must be a minimum length between 1 and 30")
+    .withMessage("must be a minimum length between 1 and 30")
     .bail(),
   body(["birthday.day", "birthday.month", "birthday.year"])
     .notEmpty()
-    .withMessage("value is required")
+    .withMessage("can not be empty!")
     .bail()
     .not()
     .isString()
-    .withMessage("value must be a number type")
+    .withMessage("must be a number type")
     .bail()
     .isInt()
-    .withMessage("value must be a integer")
+    .withMessage("must be a integer")
     .bail()
     .isLength({ min: 1, max: 4 })
-    .withMessage("value must be a minimum length between 1 and 4")
-    .bail(),
-  body(["address.country", "address.city"])
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage("country and city can not be empty!")
-    .bail()
-    .isLength({ min: 1, max: 30 })
-    .withMessage("value must be a minimum length between 1 and 30")
+    .withMessage("must be a minimum length between 1 and 4")
     .bail(),
 ];
 
-export const validateUserKeys = (
+export const validationUserRedundantKeys = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
+  const validationErrors = validationResult(req);
+  if (!validationErrors.isEmpty()) {
+    res.status(400).json({ errors: validationErrors.array() });
+    return;
+  }
+
   const body = req.body;
   const errors: { [key: string]: string }[] = [];
+
   const scheme = {
     name: "string",
     lastName: "string",
@@ -70,37 +80,30 @@ export const validateUserKeys = (
 
   if (schemeKey.length + 1 < bodyKeysLength) {
     res.status(400).json({
-      error: "the object is too large, you are sending extra keys",
+      error:
+        "object includes redundant parameters, must be name, lastName, birthday, address, id is optional",
     });
     return;
   }
 
   for (const key in scheme) {
     if (body[key]) {
-      if (key === "birthday") {
-        const schemeBirthdayKeys = Object.keys(scheme["birthday"]);
-        const bodyBirthdayKeys = Object.keys(body["birthday"]);
+      if (key === "birthday" || key === "address") {
+        const schemeKeyKeys = Object.keys(scheme[key]);
+        const bodyKeyKeys = Object.keys(body[key]);
 
-        if (schemeBirthdayKeys.length < bodyBirthdayKeys.length) {
+        const errorMessage =
+          key === "birthday"
+            ? "object includes redundant parameters, must be day, month and year"
+            : "object includes redundant parameters, must be country and city";
+
+        if (schemeKeyKeys.length < bodyKeyKeys.length) {
           errors.push({
-            [key]: "the object is too large, you are sending extra keys",
+            [key]: errorMessage,
           });
           break;
         }
       }
-      if (key === "address") {
-        const schemeAddressKeys = Object.keys(scheme["address"]);
-        const bodyAddressKeys = Object.keys(body["address"]);
-
-        if (schemeAddressKeys.length < bodyAddressKeys.length) {
-          errors.push({
-            [key]: "the object is too large, you are sending extra keys",
-          });
-          break;
-        }
-      }
-    } else {
-      errors.push({ [key]: "required" });
     }
   }
 

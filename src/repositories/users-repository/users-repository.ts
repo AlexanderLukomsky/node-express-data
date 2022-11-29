@@ -1,3 +1,4 @@
+import { Nullable } from "./../../common/index";
 import { usersData, UserType } from "./data";
 
 export const usersRepository = {
@@ -10,7 +11,7 @@ export const usersRepository = {
     return usersData;
   },
 
-  findUserById: async (id: number): Promise<UserType | null> => {
+  findUserById: async (id: number): Promise<Nullable<UserType>> => {
     const user = usersData.find((user) => user.id === id);
 
     if (user) {

@@ -1,4 +1,4 @@
-import { validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 import { NextFunction, Request, Response } from "express";
 
 export const validationMiddleware = (
@@ -13,3 +13,7 @@ export const validationMiddleware = (
     next();
   }
 };
+
+export const validationRequestBodyObjectType = [
+  body().isObject().withMessage("request must be object type").bail(),
+];

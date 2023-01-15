@@ -22,17 +22,18 @@ productsRouter.get("/:id", async (req: Request, res: Response) => {
     res.send(foundProduct);
     return;
   }
-  res.send(404);
+  res.sendStatus(404);
 });
 
-productsRouter.delete("/", async (req: Request, res: Response) => {
+productsRouter.delete("/:id", async (req: Request, res: Response) => {
   const id = +req.params.id;
+  console.log(id);
   const isDeleted = await productRepository.deleteProduct(id);
   if (isDeleted) {
-    res.send(204);
+    res.sendStatus(204);
     return;
   }
-  res.send(404);
+  res.sendStatus(404);
 });
 
 productsRouter.put(
@@ -50,7 +51,7 @@ productsRouter.put(
       res.send(updatedProduct);
       return;
     }
-    res.send(404);
+    res.sendStatus(404);
   }
 );
 

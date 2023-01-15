@@ -1,3 +1,4 @@
+import cors from "cors";
 import * as dotenv from "dotenv";
 import express, { NextFunction, Request, Response } from "express";
 import { meRouter } from "./routers/me-router";
@@ -10,12 +11,9 @@ const app = express();
 
 const port = process.env.PORT || 5000;
 
+app.options("*", cors());
+app.use(cors());
 app.use(express.json());
-
-app.get("/hello", function (req, res) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.send("Hello World");
-});
 
 app.get("/", (req: Request, res: Response) => {
   const startMessage = "data start";

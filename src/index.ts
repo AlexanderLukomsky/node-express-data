@@ -16,9 +16,10 @@ app.use(
       "X-Requested-With, content-type",
       "Access-Control-Allow-Credentials",
       "Access-Control-Allow-Headers",
+      "Access-Control-Allow-Origin",
     ],
     credentials: true,
-    origin: true,
+    origin: "http://localhost:3000",
   })
 );
 

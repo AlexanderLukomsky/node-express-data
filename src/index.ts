@@ -11,13 +11,6 @@ const app = express();
 
 app.use(
   cors({
-    allowedHeaders: [
-      "Access-Control-Allow-Headers",
-      "X-Requested-With, content-type",
-      "Access-Control-Allow-Credentials",
-      "Access-Control-Allow-Headers",
-      "Access-Control-Allow-Origin",
-    ],
     credentials: true,
     origin: "http://localhost:3000",
   })

@@ -9,19 +9,21 @@ dotenv.config();
 
 const app = express();
 
-const port = process.env.PORT || 5000;
-
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", req.header("origin"));
-  next();
-});
-
 app.use(
   cors({
+    allowedHeaders: [
+      "Access-Control-Allow-Headers",
+      "X-Requested-With, content-type",
+      "Access-Control-Allow-Credentials",
+      "Access-Control-Allow-Headers",
+    ],
     credentials: true,
     origin: true,
   })
 );
+
+const port = process.env.PORT || 5000;
+
 app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
